@@ -3,7 +3,7 @@ import mujoco.viewer
 import os
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-xml_path = os.path.join(script_dir, 'car.xml')
+xml_path = os.path.join(script_dir, '..', 'mjcf', 'mobile_base.xml')
 
 model = mujoco.MjModel.from_xml_path(xml_path)
 data = mujoco.MjData(model)
