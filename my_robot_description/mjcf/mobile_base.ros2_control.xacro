@@ -2,6 +2,7 @@
 
     <hardware>
         <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
+        <param name="mujoco_model">$(find my_robot_description)/mjcf/mobile_base.xml</param>
     </hardware>
 
     <joint name="front_steer">

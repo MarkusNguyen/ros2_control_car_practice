@@ -2,12 +2,38 @@ controller_manager:
   ros__parameters:
     update_rate: 100
 
-    joint_state_broadcaster: 
+    joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    diff_drive_controller:
-      type: diff_drive_controller/DiffDriveController
+    ackermann_steering_controller:
+      type: ackermann_steering_controller/AckermannSteeringController
 
-diff_drive_controller:
+ackermann_steering_controller:
   ros__parameters:
-    left_wheel_na
+
+    traction_joints_state_names: ["rear_right_wheel_joint", "rear_left_wheel_joint"]
+    steering_joints_names: ["front_steer"]
+
+    reduce_wheel_speed_until_steering_reached: true
+    velocity_rolling_window_size: 10
+
+    steering_track_width: 0.11
+    traction_track_width: 0.11
+    wheelbase: 0.15
+    traction_wheels_radius: 0.02
+
+    odom_frame_id: "odom"
+    base_frame_id: "base_link"
+
+    enable_odom_tf: true
+
+    pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
+    twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
+
+    cmd_vel_timeout: 0.5
+
+    linear.x.max_velocity: 1.0
+    linear.x.min_velocity: -1.0
+
+    angular.z.max_velocity: 1.0
+    angular.z.min_velocity: -1.0
