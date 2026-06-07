@@ -1,26 +1,23 @@
 controller_manager:
   ros__parameters:
-    update_rate: 100
+  
+    update_rate: 50
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    ackermann_steering_controller:
-      type: ackermann_steering_controller/AckermannSteeringController
+    bicycle_steering_controller:
+      type: bicycle_steering_controller/BicycleSteeringController
 
-ackermann_steering_controller:
+bicycle_steering_controller:
   ros__parameters:
-
-    traction_joints_state_names: ["rear_right_wheel_joint", "rear_left_wheel_joint"]
+  
+    traction_joints_names: ["rear_wheel_joint"]
     steering_joints_names: ["front_steer"]
 
-    reduce_wheel_speed_until_steering_reached: true
-    velocity_rolling_window_size: 10
-
-    steering_track_width: 0.11
-    traction_track_width: 0.11
     wheelbase: 0.15
-    traction_wheels_radius: 0.02
+    traction_wheel_radius: 0.02
+    velocity_rolling_window_size: 10
 
     odom_frame_id: "odom"
     base_frame_id: "base_link"
@@ -37,3 +34,21 @@ ackermann_steering_controller:
 
     angular.z.max_velocity: 1.0
     angular.z.min_velocity: -1.0
+
+/**:
+  ros__parameters:
+    pid_gains:
+      position:
+        front_steer:
+          p: 10.0
+          i: 0.25
+          d: 0.5
+          i_clamp_max: 5.0
+          i_clamp_min: -5.0
+      velocity:
+        rear_wheel_joint:
+          p: 0.5
+          i: 0.025
+          d: 0.025
+          i_clamp_max: 1.0
+          i_clamp_min: -1.0

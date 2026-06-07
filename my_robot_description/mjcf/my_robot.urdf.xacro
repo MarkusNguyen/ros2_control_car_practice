@@ -1,8 +1,104 @@
 <?xml version="1.0"?>
 <robot name="my_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <link name="base_link" />
+    <!-- ========== LINKS ========== -->
 
-    <xacro:include filename="mobile_base.ros2_control.xacro" />
+    <link name="base_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="60.0"/>
+            <inertia ixx="0.6" ixy="0.0" ixz="0.0" iyy="0.6" iyz="0.0" izz="0.6"/>
+        </inertial>
+    </link>
+
+    <link name="front_steer_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="5.0"/>
+            <inertia ixx="0.05" ixy="0.0" ixz="0.0" iyy="0.006" iyz="0.0" izz="0.006"/>
+        </inertial>
+    </link>
+
+    <link name="front_right_wheel_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="5.0"/>
+            <inertia ixx="0.05" ixy="0.0" ixz="0.0" iyy="0.0006" iyz="0.0" izz="0.0006"/>
+        </inertial>
+    </link>
+
+    <link name="front_left_wheel_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="5.0"/>
+            <inertia ixx="0.05" ixy="0.0" ixz="0.0" iyy="0.0006" iyz="0.0" izz="0.0006"/>
+        </inertial>
+    </link>
+
+    <link name="rear_wheel_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="10.0"/>
+            <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.0006" iyz="0.0" izz="0.0006"/>
+        </inertial>
+    </link>
+
+    <!-- ========== JOINTS ========== -->
+
+    <!-- Front steering joint: base_link -> front_steer_link -->
+    <joint name="front_steer" type="revolute">
+        <parent link="base_link"/>
+        <child link="front_steer_link"/>
+        <origin xyz="0 0.075 -0.05" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-0.3" upper="0.3" effort="100" velocity="10"/>
+    </joint>
+
+    <!-- Front right wheel: front_steer_link -> front_right_wheel_link -->
+    <joint name="front_right_wheel_joint" type="continuous">
+        <parent link="front_steer_link"/>
+        <child link="front_right_wheel_link"/>
+        <origin xyz="0.05 0 -0.025" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+    </joint>
+
+    <!-- Front left wheel: front_steer_link -> front_left_wheel_link -->
+    <joint name="front_left_wheel_joint" type="continuous">
+        <parent link="front_steer_link"/>
+        <child link="front_left_wheel_link"/>
+        <origin xyz="-0.06 0 -0.025" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+    </joint>
+
+    <!-- Rear right wheel: base_link -> rear_right_wheel_link -->
+    <joint name="rear_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="rear_wheel_link"/>
+        <origin xyz="0.0 -0.075 -0.075" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+    </joint>
+
+
+    <!-- ========== ROS2 CONTROL ========== -->
+    <ros2_control name="MobileBaseHardwareInterface" type="system">
+
+        <hardware>
+            <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
+            <param name="mujoco_model">$(find my_robot_description)/mjcf/mobile_base.xml</param>
+        </hardware>
+
+        <joint name="front_steer">
+            <command_interface name="position" />
+            <state_interface name="position" />
+            <state_interface name="velocity" />
+        </joint>
+
+        <joint name="rear_wheel_joint">
+            <command_interface name="velocity" />
+            <state_interface name="position" />
+            <state_interface name="velocity" />
+        </joint>
+
+    </ros2_control>
 
 </robot>
