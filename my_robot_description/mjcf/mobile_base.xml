@@ -39,7 +39,7 @@
         </body>
     </worldbody>
     <actuator>
-        <motor name="front_steer_act" joint="front_steer" ctrlrange="-5 5"/>
-        <motor name="rear_drive_motor" joint="rear_wheel_joint" ctrlrange="-3 3"/>
+        <motor name="front_steer_act" joint="front_steer" gear="5"/>
+        <motor name="rear_drive_motor" joint="rear_wheel_joint" />
     </actuator>
 </mujoco>

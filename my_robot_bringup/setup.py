@@ -28,6 +28,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'teleop_twist_keyboard = teleop_twist_keyboard:main'
         ],
     },
 )
+s
