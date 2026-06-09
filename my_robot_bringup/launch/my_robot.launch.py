@@ -37,15 +37,15 @@ def generate_launch_description():
         arguments=['joint_state_broadcaster']
     )
 
-    bicycle_steering_controller_node = Node(
+    ackermann_steering_controller_node = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=['bicycle_steering_controller']
+        arguments=['ackermann_steering_controller']
     )
 
     return LaunchDescription([
         mujoco_simulator_node,
         robot_state_publisher_node,
         joint_state_broadcaster_node,
-        bicycle_steering_controller_node
+        ackermann_steering_controller_node
     ])

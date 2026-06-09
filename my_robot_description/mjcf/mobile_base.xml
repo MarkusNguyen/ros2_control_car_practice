@@ -4,42 +4,61 @@
     </asset>
     <worldbody>
         <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>
-        <geom type="plane" size="1 1 0.1" rgba="1 1 1 1" friction="1.0 0.005 0.0001"/>
+
+        <!-- surface -->
+        <geom type="plane" size="1 1 0.1" rgba="1 1 1 1" friction="1.0 0.1 0.01"/>
         <body pos="0 0 0.08">
+
+            <!-- box -->
             <joint type="free"/>
-            <geom type="box" size=".05 .1 .05" rgba="0 .9 0 1" mass="60.0"/>
+            <geom type="box" size=".05 .1 .05" rgba="0 .9 0 1" mass="1.0"/>
             <body pos="0 .075 -.05">
                 <geom type="cylinder" size="0.0025" fromto="0 0 0 0 0 -.025"/>
-                <joint name="front_steer" type="hinge" axis="0 0 1" damping="2.0" range="-0.2 0.2"/>
                 <body pos="0 0 -.025">
-                    <geom type="cylinder" size="0.0025" fromto="-.05 0 0 .05 0 0" mass="5.0"/>
+                    <geom type="cylinder" size="0.0025" fromto="-.05 0 0 .05 0 0"/>
                     <body pos=".05 0 0">
+                        <joint name="front_right_steering_joint" type="hinge" axis="0 0 1" limited="true" range="-0.52 0.52" damping="0.5"/>
                         <joint name="front_right_wheel_joint" type="hinge" axis="1 0 0" damping="0.5"/>
-                        <geom type="cylinder" size="0.02" fromto="0 0 0 .01 0 0" rgba="0 0 1 1" friction="1.0 0.005 0.0001" mass="5.0"/>
-                    </body>
+                        <geom type="cylinder" size="0.02 0.01" fromto="0 0 0 .01 0 0" rgba="0 0 1 1" friction="1.0 0.1 0.01" mass="0.25"/>                    </body>
                     <body pos="-.06 0 0">
+                        <joint name="front_left_steering_joint" type="hinge" axis="0 0 1" limited="true" range="-0.52 0.52" damping="0.5"/>
                         <joint name="front_left_wheel_joint" type="hinge" axis="1 0 0" damping="0.5"/>
-                        <geom type="cylinder" size="0.02" fromto="0 0 0 .01 0 0" rgba="1 0 0 1" friction="1.0 0.005 0.0001" mass="5.0"/>
+                        <geom type="cylinder" size="0.02 0.01" fromto="0 0 0 .01 0 0" rgba="1 0 0 1" friction="1.0 0.1 0.01" mass="0.25"/>
                     </body>
                 </body>
             </body>
             <body pos="0 -.075 -.05">
                 <geom type="cylinder" size="0.0025" fromto="0 0 0 0 0 -.025"/>
                 <body pos="0 0 -.025">
-                    <joint name="rear_wheel_joint" type="hinge" axis="1 0 0" damping="2.0"/>
                     <geom type="cylinder" size="0.0025" fromto="-.05 0 0 .05 0 0"/>
                     <body pos=".05 0 0">
-                        <geom type="cylinder" size="0.02" fromto="0 0 0 .01 0 0" rgba="0 0 1 1" friction="1.0 0.005 0.0001" mass="5.0"/>
+                        <joint name="rear_right_wheel_joint" type="hinge" axis="1 0 0" damping="2.0"/>
+                        <geom type="cylinder" size="0.02 0.01" fromto="0 0 0 .01 0 0" rgba="0 0 1 1" friction="1.0 0.1 0.01" mass="0.25"/>
+                        <geom type="box" size="0.001 0.018 0.004" pos="0.005 0 0" rgba="1 1 0 1" mass="0.0001"/>
+                        <geom type="box" size="0.001 0.004 0.018" pos="0.005 0 0" rgba="1 1 0 1" mass="0.0001"/>
                     </body>
                     <body pos="-.06 0 0">
-                        <geom type="cylinder" size="0.02" fromto="0 0 0 .01 0 0" rgba="1 0 0 1" friction="1.0 0.005 0.0001" mass="5.0"/>
+                        <joint name="rear_left_wheel_joint" type="hinge" axis="1 0 0" damping="2.0"/>
+                        <geom type="cylinder" size="0.02 0.01" fromto="0 0 0 .01 0 0" rgba="1 0 0 1" friction="1.0 0.1 0.01" mass="0.25"/>
+                        <geom type="box" size="0.001 0.018 0.004" pos="0.005 0 0" rgba="1 1 0 1" mass="0.0001"/>
+                        <geom type="box" size="0.001 0.004 0.018" pos="0.005 0 0" rgba="1 1 0 1" mass="0.0001"/>
                     </body>
                 </body>
             </body>
         </body>
     </worldbody>
+
+    <!-- mujoco_ros2_control -->
     <actuator>
-        <motor name="front_steer_act" joint="front_steer" gear="5"/>
-        <motor name="rear_drive_motor" joint="rear_wheel_joint" />
+        
+        <!-- steering: ±1 N·m torque limit -->
+        <motor name="front_right_steering" joint="front_right_steering_joint" ctrlrange="-25 25"/>
+        <motor name="front_left_steering" joint="front_left_steering_joint" ctrlrange="-25 25"/>
+
+        <!-- traction: ±2 N·m torque limit -->
+        <motor name="rear_right_wheel" joint="rear_right_wheel_joint" ctrlrange="-25 25"/>
+        <motor name="rear_left_wheel" joint="rear_left_wheel_joint" ctrlrange="-25 25"/>
+
     </actuator>
+
 </mujoco>

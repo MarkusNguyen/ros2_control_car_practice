@@ -140,7 +140,7 @@ def main():
 
     # parameters
     read_only_descriptor = rcl_interfaces.msg.ParameterDescriptor(read_only=True)
-    stamped = node.declare_parameter('stamped', False, read_only_descriptor).value
+    stamped = node.declare_parameter('stamped', True, read_only_descriptor).value
     frame_id = node.declare_parameter('frame_id', '', read_only_descriptor).value
     speed = node.declare_parameter('speed', 0.5, read_only_descriptor).value
     turn = node.declare_parameter('turn', 1.0, read_only_descriptor).value
@@ -153,7 +153,7 @@ def main():
     else:
         TwistMsg = geometry_msgs.msg.Twist
 
-    pub = node.create_publisher(TwistMsg, 'cmd_vel', 10)
+    pub = node.create_publisher(TwistMsg, '/ackermann_steering_controller/reference', 10)
 
     spinner = threading.Thread(target=rclpy.spin, args=(node,))
     spinner.start()

@@ -3,79 +3,129 @@
 
     <!-- ========== LINKS ========== -->
 
+    <!-- Chassis: box 0.1×0.2×0.1 m (x,y,z), mass 1.0 kg -->
+    <!-- Ixx=m/12*(y²+z²)=0.004167, Iyy=m/12*(x²+z²)=0.001667, Izz=m/12*(x²+y²)=0.004167 -->
     <link name="base_link">
         <inertial>
             <origin xyz="0 0 0" rpy="0 0 0"/>
-            <mass value="60.0"/>
-            <inertia ixx="0.6" ixy="0.0" ixz="0.0" iyy="0.6" iyz="0.0" izz="0.6"/>
+            <mass value="1.0"/>
+            <inertia ixx="0.004167" ixy="0.0" ixz="0.0" iyy="0.001667" iyz="0.0" izz="0.004167"/>
         </inertial>
     </link>
 
-    <link name="front_steer_link">
+    <!-- Steering knuckle: small body, mass 0.25 kg -->
+    <link name="front_right_steering_link">
         <inertial>
             <origin xyz="0 0 0" rpy="0 0 0"/>
-            <mass value="5.0"/>
-            <inertia ixx="0.05" ixy="0.0" ixz="0.0" iyy="0.006" iyz="0.0" izz="0.006"/>
+            <mass value="0.25"/>
+            <inertia ixx="0.00003" ixy="0.0" ixz="0.0" iyy="0.00003" iyz="0.0" izz="0.00003"/>
         </inertial>
     </link>
 
+    <!-- Steering knuckle: small body, mass 0.25 kg -->
+    <link name="front_left_steering_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.25"/>
+            <inertia ixx="0.00003" ixy="0.0" ixz="0.0" iyy="0.00003" iyz="0.0" izz="0.00003"/>
+        </inertial>
+    </link>
+
+    <!-- Wheel: cylinder r=0.02 m, h=0.02 m, mass 0.25 kg -->
+    <!-- Ixx (about axle)=m*r²/2=0.00005, Iyy=Izz=m*(3r²+h²)/12=0.000033 -->
+    <link name="rear_right_wheel_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.25"/>
+            <inertia ixx="0.00005" ixy="0.0" ixz="0.0" iyy="0.000033" iyz="0.0" izz="0.000033"/>
+        </inertial>
+    </link>
+
+    <!-- Wheel: cylinder r=0.02 m, h=0.02 m, mass 0.25 kg -->
+    <!-- Ixx (about axle)=m*r²/2=0.00005, Iyy=Izz=m*(3r²+h²)/12=0.000033 -->
+    <link name="rear_left_wheel_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.25"/>
+            <inertia ixx="0.00005" ixy="0.0" ixz="0.0" iyy="0.000033" iyz="0.0" izz="0.000033"/>
+        </inertial>
+    </link>
+
+    <!-- Front wheel: cylinder r=0.02 m, h=0.02 m, mass 0.25 kg -->
     <link name="front_right_wheel_link">
         <inertial>
             <origin xyz="0 0 0" rpy="0 0 0"/>
-            <mass value="5.0"/>
-            <inertia ixx="0.05" ixy="0.0" ixz="0.0" iyy="0.0006" iyz="0.0" izz="0.0006"/>
+            <mass value="0.25"/>
+            <inertia ixx="0.00005" ixy="0.0" ixz="0.0" iyy="0.000033" iyz="0.0" izz="0.000033"/>
         </inertial>
     </link>
 
     <link name="front_left_wheel_link">
         <inertial>
             <origin xyz="0 0 0" rpy="0 0 0"/>
-            <mass value="5.0"/>
-            <inertia ixx="0.05" ixy="0.0" ixz="0.0" iyy="0.0006" iyz="0.0" izz="0.0006"/>
-        </inertial>
-    </link>
-
-    <link name="rear_wheel_link">
-        <inertial>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <mass value="10.0"/>
-            <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.0006" iyz="0.0" izz="0.0006"/>
+            <mass value="0.25"/>
+            <inertia ixx="0.00005" ixy="0.0" ixz="0.0" iyy="0.000033" iyz="0.0" izz="0.000033"/>
         </inertial>
     </link>
 
     <!-- ========== JOINTS ========== -->
 
-    <!-- Front steering joint: base_link -> front_steer_link -->
-    <joint name="front_steer" type="revolute">
+    <!--
+      Origins derived from MJCF mobile_base.xml body nesting:
+        front_right: chassis→(0,.075,-.05)→(0,0,-.025)→(.05,0,0) = (0.05, 0.075, -0.075)
+        front_left:  chassis→(0,.075,-.05)→(0,0,-.025)→(-.06,0,0) = (-0.06, 0.075, -0.075)
+        rear_right:  chassis→(0,-.075,-.05)→(0,0,-.025)→(.05,0,0) = (0.05, -0.075, -0.075)
+        rear_left:   chassis→(0,-.075,-.05)→(0,0,-.025)→(-.06,0,0) = (-0.06, -0.075, -0.075)
+        Wheel centre offset from joint: fromto="0 0 0 .01 0 0" → centre at x=0.005
+    -->
+
+    <!-- Steering: base_link → steering knuckle, revolute about Z, ±30° -->
+    <joint name="front_right_steering_joint" type="revolute">
         <parent link="base_link"/>
-        <child link="front_steer_link"/>
-        <origin xyz="0 0.075 -0.05" rpy="0 0 0"/>
+        <child link="front_right_steering_link"/>
+        <origin xyz="0.05 0.075 -0.075" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
-        <limit lower="-0.3" upper="0.3" effort="100" velocity="10"/>
+        <limit lower="-0.52" upper="0.52" effort="25" velocity="1.0"/>
     </joint>
 
-    <!-- Front right wheel: front_steer_link -> front_right_wheel_link -->
-    <joint name="front_right_wheel_joint" type="continuous">
-        <parent link="front_steer_link"/>
-        <child link="front_right_wheel_link"/>
-        <origin xyz="0.05 0 -0.025" rpy="0 0 0"/>
-        <axis xyz="1 0 0"/>
-    </joint>
-
-    <!-- Front left wheel: front_steer_link -> front_left_wheel_link -->
-    <joint name="front_left_wheel_joint" type="continuous">
-        <parent link="front_steer_link"/>
-        <child link="front_left_wheel_link"/>
-        <origin xyz="-0.06 0 -0.025" rpy="0 0 0"/>
-        <axis xyz="1 0 0"/>
-    </joint>
-
-    <!-- Rear right wheel: base_link -> rear_right_wheel_link -->
-    <joint name="rear_wheel_joint" type="continuous">
+    <joint name="front_left_steering_joint" type="revolute">
         <parent link="base_link"/>
-        <child link="rear_wheel_link"/>
-        <origin xyz="0.0 -0.075 -0.075" rpy="0 0 0"/>
+        <child link="front_left_steering_link"/>
+        <origin xyz="-0.06 0.075 -0.075" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-0.52" upper="0.52" effort="25" velocity="1.0"/>
+    </joint>
+
+    <!-- Front wheel: knuckle → wheel link, continuous about X -->
+    <joint name="front_right_wheel_joint" type="continuous">
+        <parent link="front_right_steering_link"/>
+        <child link="front_right_wheel_link"/>
+        <origin xyz="0.005 0 0" rpy="0 0 0"/>
         <axis xyz="1 0 0"/>
+    </joint>
+
+    <joint name="front_left_wheel_joint" type="continuous">
+        <parent link="front_left_steering_link"/>
+        <child link="front_left_wheel_link"/>
+        <origin xyz="0.005 0 0" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+    </joint>
+
+    <!-- Rear wheel: base_link → wheel link, continuous about X -->
+    <joint name="rear_right_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="rear_right_wheel_link"/>
+        <origin xyz="0.055 -0.075 -0.075" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit effort="25" velocity="1.0"/>
+    </joint>
+
+    <joint name="rear_left_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="rear_left_wheel_link"/>
+        <origin xyz="-0.055 -0.075 -0.075" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit effort="25" velocity="1.0"/>
     </joint>
 
 
@@ -87,13 +137,25 @@
             <param name="mujoco_model">$(find my_robot_description)/mjcf/mobile_base.xml</param>
         </hardware>
 
-        <joint name="front_steer">
+        <joint name="front_right_steering_joint">
             <command_interface name="position" />
             <state_interface name="position" />
             <state_interface name="velocity" />
         </joint>
 
-        <joint name="rear_wheel_joint">
+        <joint name="front_left_steering_joint">
+            <command_interface name="position" />
+            <state_interface name="position" />
+            <state_interface name="velocity" />
+        </joint>
+
+        <joint name="rear_right_wheel_joint">
+            <command_interface name="velocity" />
+            <state_interface name="position" />
+            <state_interface name="velocity" />
+        </joint>
+
+        <joint name="rear_left_wheel_joint">
             <command_interface name="velocity" />
             <state_interface name="position" />
             <state_interface name="velocity" />
